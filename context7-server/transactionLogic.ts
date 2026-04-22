@@ -124,4 +124,5 @@ class TransactionManager {
   }
 }
 
-export { TransactionManager, Transaction, categories };
+export { TransactionManager, categories };
+export type { Transaction };

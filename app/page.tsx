@@ -1,3 +1,4 @@
+﻿// Updated page.tsx with Glassmorphism UI
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -6,6 +7,8 @@ import { FileDown, DollarSign, TrendingUp, TrendingDown, Trash2, Plus, Search, C
 import { motion } from 'framer-motion';
 import EditTransactionModal from '../components/EditTransactionModal';
 import TransactionList from '../components/TransactionList';
+import BalanceCreditCard from '../components/BalanceCreditCard';
+import SummaryCards from '../components/SummaryCards';
 
 interface Transaction {
   id: string;
@@ -17,25 +20,21 @@ interface Transaction {
 }
 
 const categories = ['Ăn uống', 'Di chuyển', 'Mua sắm', 'Giải trí', 'Khác'];
-const colors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+const colors = ['#10b981', '#f43f5e', '#8b5cf6', '#f59e0b', '#06b6d4'];
 
 export default function Dashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-
   const [formData, setFormData] = useState({
     amount: '',
     type: 'expense' as 'income' | 'expense',
     category: categories[0],
     note: ''
   });
-
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
-
-  const [monthFilter, setMonthFilter] = useState<'all' | 'current' | 'previous'>('all');
+  const [monthFilter, setMonthFilter] = useState<{ month: number | null, year: number }>({ month: null, year: new Date().getFullYear() });
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
-
   const [hasLoaded, setHasLoaded] = useState(false);
 
   useEffect(() => {
@@ -47,7 +46,6 @@ export default function Dashboard() {
           if (parsed.length > 0) {
             setTransactions(parsed);
           } else {
-            // Use default data if empty
             setTransactions([
               { id: '1', amount: 5000000, type: 'income', category: 'Khác', note: 'Lương tháng 4', date: '2024-04-01' },
               { id: '2', amount: 200000, type: 'expense', category: 'Ăn uống', note: 'Ăn trưa', date: '2024-04-02' },
@@ -93,14 +91,9 @@ export default function Dashboard() {
     return transactions.filter(t => {
       const matchesSearch = t.note.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = categoryFilter === 'all' || t.category === categoryFilter;
-      const now = new Date();
       const transactionDate = new Date(t.date);
-      const matchesMonth = monthFilter === 'all' ||
-        (monthFilter === 'current' && transactionDate.getMonth() === now.getMonth() && transactionDate.getFullYear() === now.getFullYear()) ||
-        (monthFilter === 'previous' && (
-          (transactionDate.getMonth() === now.getMonth() - 1 && transactionDate.getFullYear() === now.getFullYear()) ||
-          (now.getMonth() === 0 && transactionDate.getMonth() === 11 && transactionDate.getFullYear() === now.getFullYear() - 1)
-        ));
+      const matchesMonth = monthFilter.month === null ||
+        (transactionDate.getMonth() === monthFilter.month - 1 && transactionDate.getFullYear() === monthFilter.year);
       return matchesSearch && matchesCategory && matchesMonth;
     });
   }, [transactions, searchTerm, categoryFilter, monthFilter]);
@@ -180,7 +173,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-4">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -188,12 +181,14 @@ export default function Dashboard() {
           transition={{ duration: 0.6 }}
           className="flex justify-between items-center mb-8"
         >
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard Chi Tiêu</h1>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            Dashboard Chi Tiêu
+          </h1>
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)' }}
             whileTap={{ scale: 0.95 }}
             onClick={exportToCSV}
-            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center transition-colors duration-200"
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex items-center transition-all duration-200"
           >
             <FileDown className="h-5 w-5 mr-2" />
             Export CSV
@@ -202,53 +197,13 @@ export default function Dashboard() {
 
         {hasLoaded ? (
           <>
+            {/* Balance Credit Card */}
+            <div className="mb-8">
+              <BalanceCreditCard balance={balance} />
+            </div>
+
             {/* Summary Cards */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
-            >
-              <motion.div
-                whileHover={{ scale: 1.02, y: -5 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className="bg-white p-6 rounded-lg shadow-md border-t-4 border-blue-500"
-              >
-                <div className="flex items-center">
-                  <DollarSign className="h-8 w-8 text-blue-500" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Tổng Số Dư</p>
-                    <p className="text-3xl font-bold text-gray-900">{balance.toLocaleString('vi-VN')} VND</p>
-                  </div>
-                </div>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.02, y: -5 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className="bg-white p-6 rounded-lg shadow-md border-t-4 border-green-500"
-              >
-                <div className="flex items-center">
-                  <TrendingUp className="h-8 w-8 text-green-500" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Tổng Thu Nhập</p>
-                    <p className="text-2xl font-semibold text-gray-900">{totalIncome.toLocaleString('vi-VN')} VND</p>
-                  </div>
-                </div>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.02, y: -5 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className="bg-white p-6 rounded-lg shadow-md border-t-4 border-red-500"
-              >
-                <div className="flex items-center">
-                  <TrendingDown className="h-8 w-8 text-red-500" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Tổng Chi Tiêu</p>
-                    <p className="text-2xl font-semibold text-gray-900">{totalExpense.toLocaleString('vi-VN')} VND</p>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
+            <SummaryCards balance={balance} totalIncome={totalIncome} totalExpense={totalExpense} />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Pie Chart */}
@@ -256,11 +211,11 @@ export default function Dashboard() {
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="bg-white p-6 rounded-lg shadow-md"
+                className="bg-white/70 backdrop-blur-md p-6 rounded-xl shadow-xl border border-white/20"
               >
                 <div className="mb-4">
-                  <h2 className="text-2xl font-bold text-slate-900">Chi Tiêu Theo Danh Mục</h2>
-                  <div className="w-12 h-1 bg-indigo-500 mt-1"></div>
+                  <h2 className="text-2xl font-bold text-indigo-900">Chi Tiêu Theo Danh Mục</h2>
+                  <div className="w-12 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 mt-1 rounded-full"></div>
                 </div>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
@@ -287,43 +242,43 @@ export default function Dashboard() {
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="bg-white p-6 rounded-lg shadow-md"
+                className="bg-white/70 backdrop-blur-md p-6 rounded-xl shadow-xl border border-white/20"
               >
                 <div className="mb-4">
-                  <h2 className="text-2xl font-bold text-slate-900">Thêm Giao Dịch</h2>
-                  <div className="w-12 h-1 bg-indigo-500 mt-1"></div>
+                  <h2 className="text-2xl font-bold text-indigo-900">Thêm Giao Dịch</h2>
+                  <div className="w-12 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 mt-1 rounded-full"></div>
                 </div>
                 <div className="space-y-4">
                   <div className="relative">
-                    <label className="block text-sm font-semibold text-gray-800">Số Tiền</label>
+                    <label className="block text-sm font-semibold text-slate-700">Số Tiền</label>
                     <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                       <input
                         type="number"
                         value={formData.amount}
                         onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                        className="mt-1 block w-full h-11 pl-11 pr-3 rounded-md border border-gray-200 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-black"
+                        className="mt-1 block w-full h-11 pl-11 pr-3 rounded-lg border border-white/30 bg-white/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900 placeholder-slate-400"
                         placeholder="Nhập số tiền"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-800">Loại</label>
+                    <label className="block text-sm font-semibold text-slate-700">Loại</label>
                     <select
                       value={formData.type}
                       onChange={(e) => setFormData({ ...formData, type: e.target.value as 'income' | 'expense' })}
-                      className="mt-1 block w-full h-11 px-3 rounded-md border border-gray-200 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-black"
+                      className="mt-1 block w-full h-11 px-3 rounded-lg border border-white/30 bg-white/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900"
                     >
                       <option value="income">Thu Nhập</option>
                       <option value="expense">Chi Tiêu</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-800">Danh Mục</label>
+                    <label className="block text-sm font-semibold text-slate-700">Danh Mục</label>
                     <select
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      className="mt-1 block w-full h-11 px-3 rounded-md border border-gray-200 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-black"
+                      className="mt-1 block w-full h-11 px-3 rounded-lg border border-white/30 bg-white/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900"
                     >
                       {categories.map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
@@ -331,24 +286,24 @@ export default function Dashboard() {
                     </select>
                   </div>
                   <div className="relative">
-                    <label className="block text-sm font-semibold text-gray-800">Ghi Chú</label>
+                    <label className="block text-sm font-semibold text-slate-700">Ghi Chú</label>
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                       <input
                         type="text"
                         value={formData.note}
                         onChange={(e) => setFormData({ ...formData, note: e.target.value })}
-                        className="mt-1 block w-full h-11 pl-11 pr-3 rounded-md border border-gray-200 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-black"
+                        className="mt-1 block w-full h-11 pl-11 pr-3 rounded-lg border border-white/30 bg-white/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900 placeholder-slate-400"
                         placeholder="Nhập ghi chú"
                       />
                     </div>
                   </div>
                   <motion.button
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: 1.02, boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={addTransaction}
                     disabled={!formData.amount.trim() || !formData.note.trim() || parseFloat(formData.amount) <= 0}
-                    className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
+                    className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-4 rounded-lg shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex items-center justify-center disabled:bg-slate-400 disabled:cursor-not-allowed transition-all duration-200"
                   >
                     <Plus className="h-5 w-5 mr-2" />
                     Thêm Giao Dịch
@@ -363,49 +318,69 @@ export default function Dashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
               whileHover={{ y: -2 }}
-              className="bg-white p-6 rounded-lg shadow-md mt-8"
+              className="bg-white/70 backdrop-blur-md p-6 rounded-xl shadow-xl border border-white/20 mt-8"
             >
               <div className="mb-6">
-                <h2 className="text-2xl font-bold text-slate-900">Công Cụ Lọc</h2>
-                <div className="w-12 h-1 bg-indigo-500 mt-1"></div>
+                <h2 className="text-2xl font-bold text-indigo-900">Công Cụ Lọc</h2>
+                <div className="w-12 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 mt-1 rounded-full"></div>
               </div>
               <div className="flex flex-wrap gap-6 items-end">
                 <div className="flex-1 min-w-64">
-                  <label className="block text-sm font-semibold text-gray-800 mb-2">Tìm Kiếm Theo Ghi Chú</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Tìm Kiếm Theo Ghi Chú</label>
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                     <input
                       type="text"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="block w-full h-11 pl-11 pr-3 rounded-md border border-gray-200 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-black"
+                      className="block w-full h-11 pl-11 pr-3 rounded-lg border border-white/30 bg-white/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900 placeholder-slate-400"
                       placeholder="Nhập từ khóa..."
                     />
                   </div>
                 </div>
-                <div className="min-w-48">
-                  <label className="block text-sm font-semibold text-gray-800 mb-2">Lọc Theo Tháng</label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <select
-                      value={monthFilter}
-                      onChange={(e) => setMonthFilter(e.target.value as 'all' | 'current' | 'previous')}
-                      className="block w-full h-11 pl-11 pr-3 rounded-md border border-gray-200 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-black"
-                    >
-                      <option value="all">Tất Cả</option>
-                      <option value="current">Tháng Này</option>
-                      <option value="previous">Tháng Trước</option>
-                    </select>
+                <div className="flex gap-4 items-end">
+                  <div className="min-w-40">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Tháng</label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+                      <select
+                        value={monthFilter.month ?? ''}
+                        onChange={(e) => setMonthFilter({ ...monthFilter, month: e.target.value ? parseInt(e.target.value) : null })}
+                        className="block w-full h-11 pl-11 pr-3 rounded-lg border border-white/30 bg-white/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900"
+                      >
+                        <option value="">Tất Cả</option>
+                        {[...Array(12)].map((_, i) => {
+                          const monthNum = i + 1;
+                          const monthName = new Date(2024, i, 1).toLocaleDateString('vi-VN', { month: 'long' });
+                          return <option key={monthNum} value={monthNum}>Tháng {monthNum}</option>;
+                        })}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="min-w-40">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Năm</label>
+                    <div className="relative">
+                      <select
+                        value={monthFilter.year}
+                        onChange={(e) => setMonthFilter({ ...monthFilter, year: parseInt(e.target.value) })}
+                        className="block w-full h-11 px-3 rounded-lg border border-white/30 bg-white/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900"
+                      >
+                        {[...Array(5)].map((_, i) => {
+                          const year = new Date().getFullYear() - 2 + i;
+                          return <option key={year} value={year}>{year}</option>;
+                        })}
+                      </select>
+                    </div>
                   </div>
                 </div>
                 <div className="min-w-48">
-                  <label className="block text-sm font-semibold text-gray-800 mb-2">Lọc Theo Danh Mục</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Lọc Theo Danh Mục</label>
                   <div className="relative">
-                    <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                     <select
                       value={categoryFilter}
                       onChange={(e) => setCategoryFilter(e.target.value)}
-                      className="block w-full h-11 pl-11 pr-3 rounded-md border border-gray-200 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-black"
+                      className="block w-full h-11 pl-11 pr-3 rounded-lg border border-white/30 bg-white/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900"
                     >
                       <option value="all">Tất Cả</option>
                       {categories.map(cat => (
@@ -435,7 +410,11 @@ export default function Dashboard() {
           </>
         ) : (
           <div className="flex justify-center items-center min-h-96">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className="rounded-full h-12 w-12 border-b-2 border-indigo-600"
+            ></motion.div>
           </div>
         )}
       </div>
