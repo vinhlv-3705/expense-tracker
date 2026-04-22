@@ -173,7 +173,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-4">
+    <div className="min-h-screen p-4">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -211,11 +211,11 @@ export default function Dashboard() {
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="bg-white/70 backdrop-blur-md p-6 rounded-xl shadow-xl border border-white/20"
+                className="bg-white/40 backdrop-blur-xl p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60"
               >
-                <div className="mb-4">
-                  <h2 className="text-2xl font-bold text-indigo-900">Chi Tiêu Theo Danh Mục</h2>
-                  <div className="w-12 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 mt-1 rounded-full"></div>
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold text-[#1e293b]">Chi Tiêu Theo Danh Mục</h2>
+                  <div className="w-12 h-1 bg-gradient-to-r from-indigo-400 to-purple-400 mt-2 rounded-full"></div>
                 </div>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
@@ -242,11 +242,11 @@ export default function Dashboard() {
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="bg-white/70 backdrop-blur-md p-6 rounded-xl shadow-xl border border-white/20"
+                className="bg-white/40 backdrop-blur-xl p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60"
               >
-                <div className="mb-4">
-                  <h2 className="text-2xl font-bold text-indigo-900">Thêm Giao Dịch</h2>
-                  <div className="w-12 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 mt-1 rounded-full"></div>
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold text-[#1e293b]">Thêm Giao Dịch</h2>
+                  <div className="w-12 h-1 bg-gradient-to-r from-indigo-400 to-purple-400 mt-2 rounded-full"></div>
                 </div>
                 <div className="space-y-4">
                   <div className="relative">
@@ -257,7 +257,7 @@ export default function Dashboard() {
                         type="number"
                         value={formData.amount}
                         onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                        className="mt-1 block w-full h-11 pl-11 pr-3 rounded-lg border border-white/30 bg-white/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900 placeholder-slate-400"
+                        className="mt-1 block w-full h-11 pl-11 pr-3 rounded-lg border border-white/50 bg-white/30 backdrop-blur-md shadow-sm focus:ring-2 focus:ring-indigo-400 focus:border-white/70 transition-all text-slate-900 placeholder-slate-500"
                         placeholder="Nhập số tiền"
                       />
                     </div>
@@ -267,7 +267,7 @@ export default function Dashboard() {
                     <select
                       value={formData.type}
                       onChange={(e) => setFormData({ ...formData, type: e.target.value as 'income' | 'expense' })}
-                      className="mt-1 block w-full h-11 px-3 rounded-lg border border-white/30 bg-white/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900"
+                      className="mt-1 block w-full h-11 px-3 rounded-lg border border-white/50 bg-white/30 backdrop-blur-md shadow-sm focus:ring-2 focus:ring-indigo-400 focus:border-white/70 transition-all text-slate-900"
                     >
                       <option value="income">Thu Nhập</option>
                       <option value="expense">Chi Tiêu</option>
@@ -278,7 +278,7 @@ export default function Dashboard() {
                     <select
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      className="mt-1 block w-full h-11 px-3 rounded-lg border border-white/30 bg-white/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900"
+                      className="mt-1 block w-full h-11 px-3 rounded-lg border border-white/50 bg-white/30 backdrop-blur-md shadow-sm focus:ring-2 focus:ring-indigo-400 focus:border-white/70 transition-all text-slate-900"
                     >
                       {categories.map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
@@ -293,7 +293,7 @@ export default function Dashboard() {
                         type="text"
                         value={formData.note}
                         onChange={(e) => setFormData({ ...formData, note: e.target.value })}
-                        className="mt-1 block w-full h-11 pl-11 pr-3 rounded-lg border border-white/30 bg-white/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900 placeholder-slate-400"
+                        className="mt-1 block w-full h-11 pl-11 pr-3 rounded-lg border border-white/50 bg-white/30 backdrop-blur-md shadow-sm focus:ring-2 focus:ring-indigo-400 focus:border-white/70 transition-all text-slate-900 placeholder-slate-500"
                         placeholder="Nhập ghi chú"
                       />
                     </div>
@@ -318,11 +318,11 @@ export default function Dashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
               whileHover={{ y: -2 }}
-              className="bg-white/70 backdrop-blur-md p-6 rounded-xl shadow-xl border border-white/20 mt-8"
+              className="bg-white/40 backdrop-blur-xl p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 mt-8"
             >
               <div className="mb-6">
-                <h2 className="text-2xl font-bold text-indigo-900">Công Cụ Lọc</h2>
-                <div className="w-12 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 mt-1 rounded-full"></div>
+                <h2 className="text-2xl font-bold text-[#1e293b]">Công Cụ Lọc</h2>
+                <div className="w-12 h-1 bg-gradient-to-r from-indigo-400 to-purple-400 mt-2 rounded-full"></div>
               </div>
               <div className="flex flex-wrap gap-6 items-end">
                 <div className="flex-1 min-w-64">
@@ -333,7 +333,7 @@ export default function Dashboard() {
                       type="text"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="block w-full h-11 pl-11 pr-3 rounded-lg border border-white/30 bg-white/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900 placeholder-slate-400"
+                      className="block w-full h-11 pl-11 pr-3 rounded-lg border border-white/50 bg-white/30 backdrop-blur-md shadow-sm focus:ring-2 focus:ring-indigo-400 focus:border-white/70 transition-all text-slate-900 placeholder-slate-500"
                       placeholder="Nhập từ khóa..."
                     />
                   </div>
@@ -346,7 +346,7 @@ export default function Dashboard() {
                       <select
                         value={monthFilter.month ?? ''}
                         onChange={(e) => setMonthFilter({ ...monthFilter, month: e.target.value ? parseInt(e.target.value) : null })}
-                        className="block w-full h-11 pl-11 pr-3 rounded-lg border border-white/30 bg-white/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900"
+                        className="block w-full h-11 pl-11 pr-3 rounded-lg border border-white/50 bg-white/30 backdrop-blur-md shadow-sm focus:ring-2 focus:ring-indigo-400 focus:border-white/70 transition-all text-slate-900"
                       >
                         <option value="">Tất Cả</option>
                         {[...Array(12)].map((_, i) => {
@@ -363,7 +363,7 @@ export default function Dashboard() {
                       <select
                         value={monthFilter.year}
                         onChange={(e) => setMonthFilter({ ...monthFilter, year: parseInt(e.target.value) })}
-                        className="block w-full h-11 px-3 rounded-lg border border-white/30 bg-white/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900"
+                        className="block w-full h-11 px-3 rounded-lg border border-white/50 bg-white/30 backdrop-blur-md shadow-sm focus:ring-2 focus:ring-indigo-400 focus:border-white/70 transition-all text-slate-900"
                       >
                         {[...Array(5)].map((_, i) => {
                           const year = new Date().getFullYear() - 2 + i;
@@ -380,7 +380,7 @@ export default function Dashboard() {
                     <select
                       value={categoryFilter}
                       onChange={(e) => setCategoryFilter(e.target.value)}
-                      className="block w-full h-11 pl-11 pr-3 rounded-lg border border-white/30 bg-white/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900"
+                      className="block w-full h-11 pl-11 pr-3 rounded-lg border border-white/50 bg-white/30 backdrop-blur-md shadow-sm focus:ring-2 focus:ring-indigo-400 focus:border-white/70 transition-all text-slate-900"
                     >
                       <option value="all">Tất Cả</option>
                       {categories.map(cat => (

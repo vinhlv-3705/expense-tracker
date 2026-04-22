@@ -62,11 +62,11 @@ export default function EditTransactionModal({ transaction, categories, onSave, 
   if (!isOpen || !transaction) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Sửa Giao Dịch</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white/40 backdrop-blur-xl p-8 rounded-2xl shadow-[0_20px_60px_rgb(0,0,0,0.15)] border border-white/60 max-w-md w-full mx-4">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold text-[#1e293b]">Sửa Giao Dịch</h2>
+          <button onClick={onClose} className="text-slate-500 hover:text-slate-700 transition-colors">
             <X className="h-6 w-6" />
           </button>
         </div>
@@ -78,10 +78,10 @@ export default function EditTransactionModal({ transaction, categories, onSave, 
           isEditing={true}
           onSave={handleSave}
         />
-        <div className="mt-4 flex justify-end">
+        <div className="mt-6 flex justify-end">
           <button
             onClick={onClose}
-            className="bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            className="bg-white/60 backdrop-blur-sm text-slate-700 py-2 px-6 rounded-xl border border-white/50 hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 transition-all shadow-sm"
           >
             Hủy
           </button>

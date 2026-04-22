@@ -22,11 +22,11 @@ export default function TransactionList({ transactions, onDelete, onEdit }: Tran
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.8 }}
-      className="bg-white/70 backdrop-blur-md p-6 rounded-xl shadow-xl border border-white/20 mt-8"
+      className="bg-white/40 backdrop-blur-xl p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 mt-8"
     >
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-indigo-900">Lịch Sử Giao Dịch</h2>
-        <div className="w-12 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 mt-1 rounded-full"></div>
+        <h2 className="text-2xl font-bold text-[#1e293b]">Lịch Sử Giao Dịch</h2>
+        <div className="w-12 h-1 bg-gradient-to-r from-indigo-400 to-purple-400 mt-2 rounded-full"></div>
       </div>
       <div className="space-y-3">
         {transactions.map((transaction, index) => (
@@ -40,10 +40,10 @@ export default function TransactionList({ transactions, onDelete, onEdit }: Tran
               y: -2,
               boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
             }}
-            className="group relative bg-white/50 backdrop-blur-sm p-4 rounded-lg border border-white/30 cursor-pointer transition-all duration-300 overflow-hidden"
+            className="group relative bg-white/30 backdrop-blur-md p-5 rounded-xl border border-white/50 cursor-pointer transition-all duration-300 overflow-hidden shadow-sm hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)]"
           >
             {/* Hover background effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-50/30 to-purple-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex-1">
