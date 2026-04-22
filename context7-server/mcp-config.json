@@ -1,0 +1,33 @@
+﻿{
+  "mcpServers": {
+    "expense-tracker": {
+      "command": "node",
+      "args": ["server.js"],
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  },
+  "context": {
+    "folderMap": {
+      "app": "Main application code",
+      "components": "React components",
+      "context7-server": "MCP server implementation",
+      "specs": "Project specifications and knowledge base",
+      "public": "Static assets"
+    },
+    "businessLogic": {
+      "transactionManagement": "Core logic for managing income and expense transactions",
+      "dataPersistence": "Local storage handling for transaction data",
+      "financialCalculations": "Summary and category-based expense calculations",
+      "exportFunctionality": "CSV export capabilities"
+    },
+    "keyFeatures": [
+      "Add, edit, delete transactions",
+      "Categorize expenses and income",
+      "View financial summaries",
+      "Export data to CSV",
+      "Responsive dashboard with charts"
+    ]
+  }
+}
