@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { FileDown, DollarSign, TrendingUp, TrendingDown, Trash2, Plus, Search, Calendar, Filter } from 'lucide-react';
+import { FileDown, DollarSign, Plus, Search, Calendar, Filter, Sun, Moon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import EditTransactionModal from '../components/EditTransactionModal';
 import TransactionList from '../components/TransactionList';
@@ -20,10 +20,42 @@ interface Transaction {
 }
 
 const categories = ['Ăn uống', 'Di chuyển', 'Mua sắm', 'Giải trí', 'Khác'];
-const colors = ['#10b981', '#f43f5e', '#8b5cf6', '#f59e0b', '#06b6d4'];
+const colors = ['#1d4ed8', '#0ea5e9', '#06b6d4', '#38bdf8', '#3b82f6'];
+const defaultTransactions: Transaction[] = [
+  { id: '1', amount: 5000000, type: 'income', category: 'Khác', note: 'Lương tháng 4', date: '2024-04-01' },
+  { id: '2', amount: 200000, type: 'expense', category: 'Ăn uống', note: 'Ăn trưa', date: '2024-04-02' },
+  { id: '3', amount: 150000, type: 'expense', category: 'Di chuyển', note: 'Xăng xe', date: '2024-04-03' },
+  { id: '4', amount: 1000000, type: 'income', category: 'Khác', note: 'Thưởng', date: '2024-04-05' },
+  { id: '5', amount: 300000, type: 'expense', category: 'Mua sắm', note: 'Quần áo', date: '2024-04-07' },
+];
 
 export default function Dashboard() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+    const savedTheme = localStorage.getItem('expense-tracker-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return savedTheme ? savedTheme === 'dark' : prefersDark;
+  });
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
+    if (typeof window === 'undefined') {
+      return defaultTransactions;
+    }
+
+    const savedTransactions = localStorage.getItem('expense-tracker-transactions');
+    if (!savedTransactions) {
+      return defaultTransactions;
+    }
+
+    try {
+      const parsed: Transaction[] = JSON.parse(savedTransactions);
+      return parsed.length > 0 ? parsed : defaultTransactions;
+    } catch (error) {
+      console.error('Error loading transactions from localStorage:', error);
+      return defaultTransactions;
+    }
+  });
   const [formData, setFormData] = useState({
     amount: '',
     type: 'expense' as 'income' | 'expense',
@@ -35,53 +67,17 @@ export default function Dashboard() {
   const [monthFilter, setMonthFilter] = useState<{ month: number | null, year: number }>({ month: null, year: new Date().getFullYear() });
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [hasLoaded, setHasLoaded] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedTransactions = localStorage.getItem('expense-tracker-transactions');
-      if (savedTransactions) {
-        try {
-          const parsed = JSON.parse(savedTransactions);
-          if (parsed.length > 0) {
-            setTransactions(parsed);
-          } else {
-            setTransactions([
-              { id: '1', amount: 5000000, type: 'income', category: 'Khác', note: 'Lương tháng 4', date: '2024-04-01' },
-              { id: '2', amount: 200000, type: 'expense', category: 'Ăn uống', note: 'Ăn trưa', date: '2024-04-02' },
-              { id: '3', amount: 150000, type: 'expense', category: 'Di chuyển', note: 'Xăng xe', date: '2024-04-03' },
-              { id: '4', amount: 1000000, type: 'income', category: 'Khác', note: 'Thưởng', date: '2024-04-05' },
-              { id: '5', amount: 300000, type: 'expense', category: 'Mua sắm', note: 'Quần áo', date: '2024-04-07' },
-            ]);
-          }
-        } catch (error) {
-          console.error('Error loading transactions from localStorage:', error);
-          setTransactions([
-            { id: '1', amount: 5000000, type: 'income', category: 'Khác', note: 'Lương tháng 4', date: '2024-04-01' },
-            { id: '2', amount: 200000, type: 'expense', category: 'Ăn uống', note: 'Ăn trưa', date: '2024-04-02' },
-            { id: '3', amount: 150000, type: 'expense', category: 'Di chuyển', note: 'Xăng xe', date: '2024-04-03' },
-            { id: '4', amount: 1000000, type: 'income', category: 'Khác', note: 'Thưởng', date: '2024-04-05' },
-            { id: '5', amount: 300000, type: 'expense', category: 'Mua sắm', note: 'Quần áo', date: '2024-04-07' },
-          ]);
-        }
-      } else {
-        setTransactions([
-          { id: '1', amount: 5000000, type: 'income', category: 'Khác', note: 'Lương tháng 4', date: '2024-04-01' },
-          { id: '2', amount: 200000, type: 'expense', category: 'Ăn uống', note: 'Ăn trưa', date: '2024-04-02' },
-          { id: '3', amount: 150000, type: 'expense', category: 'Di chuyển', note: 'Xăng xe', date: '2024-04-03' },
-          { id: '4', amount: 1000000, type: 'income', category: 'Khác', note: 'Thưởng', date: '2024-04-05' },
-          { id: '5', amount: 300000, type: 'expense', category: 'Mua sắm', note: 'Quần áo', date: '2024-04-07' },
-        ]);
-      }
-      setHasLoaded(true);
-    }
-  }, []);
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    localStorage.setItem('expense-tracker-theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
 
   useEffect(() => {
-    if (hasLoaded && transactions.length > 0) {
+    if (transactions.length > 0) {
       localStorage.setItem('expense-tracker-transactions', JSON.stringify(transactions));
     }
-  }, [transactions, hasLoaded]);
+  }, [transactions]);
 
   const totalIncome = useMemo(() => transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0), [transactions]);
   const totalExpense = useMemo(() => transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0), [transactions]);
@@ -173,37 +169,47 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen p-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen px-4 py-8 md:px-6 md:py-10">
+      <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="flex justify-between items-center mb-8"
+          className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-10"
         >
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className={`text-4xl font-black bg-gradient-to-r bg-clip-text text-transparent tracking-tight ${isDark ? 'from-sky-200 via-blue-300 to-cyan-300' : 'from-blue-800 via-sky-700 to-cyan-600'}`}>
             Dashboard Chi Tiêu
           </h1>
-          <motion.button
-            whileHover={{ scale: 1.05, boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)' }}
-            whileTap={{ scale: 0.95 }}
-            onClick={exportToCSV}
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex items-center transition-all duration-200"
-          >
-            <FileDown className="h-5 w-5 mr-2" />
-            Export CSV
-          </motion.button>
+          <div className="flex items-center gap-3">
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+              onClick={() => setIsDark((prev) => !prev)}
+              className={`h-12 w-12 rounded-2xl border backdrop-blur-xl flex items-center justify-center shadow-sm focus:outline-none focus:ring-2 transition-all ${isDark ? 'bg-slate-900/50 border-slate-700 text-sky-200 focus:ring-sky-400' : 'bg-white/50 border-white/70 text-blue-700 focus:ring-blue-400'}`}
+              aria-label="Toggle theme"
+            >
+              {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.03, boxShadow: isDark ? '0 14px 24px -10px rgba(56, 189, 248, 0.45)' : '0 14px 24px -10px rgba(37, 99, 235, 0.4)' }}
+              whileTap={{ scale: 0.97 }}
+              onClick={exportToCSV}
+              className={`text-white px-6 py-3 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center transition-all duration-300 ${isDark ? 'bg-gradient-to-r from-sky-500 to-blue-600 focus:ring-sky-400 focus:ring-offset-slate-950' : 'bg-gradient-to-r from-blue-700 to-sky-600 focus:ring-blue-500 focus:ring-offset-slate-100'}`}
+            >
+              <FileDown className="h-5 w-5 mr-2" />
+              Export CSV
+            </motion.button>
+          </div>
         </motion.div>
 
-        {hasLoaded ? (
-          <>
+        <>
             {/* Balance Credit Card */}
-            <div className="mb-8">
-              <BalanceCreditCard balance={balance} />
+            <div className="mb-10">
+              <BalanceCreditCard balance={balance} isDark={isDark} />
             </div>
 
             {/* Summary Cards */}
-            <SummaryCards balance={balance} totalIncome={totalIncome} totalExpense={totalExpense} />
+            <SummaryCards totalIncome={totalIncome} totalExpense={totalExpense} isDark={isDark} />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Pie Chart */}
@@ -211,11 +217,11 @@ export default function Dashboard() {
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="bg-white/40 backdrop-blur-xl p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60"
+                className={`backdrop-blur-xl p-8 rounded-2xl border ${isDark ? 'bg-slate-900/45 border-slate-700/60 shadow-[0_12px_35px_rgba(2,6,23,0.55)]' : 'bg-white/40 border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)]'}`}
               >
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-[#1e293b]">Chi Tiêu Theo Danh Mục</h2>
-                  <div className="w-12 h-1 bg-gradient-to-r from-indigo-400 to-purple-400 mt-2 rounded-full"></div>
+                  <h2 className={`text-2xl font-bold ${isDark ? 'text-slate-100' : 'text-[#1e293b]'}`}>Chi Tiêu Theo Danh Mục</h2>
+                  <div className={`w-12 h-1 mt-2 rounded-full ${isDark ? 'bg-gradient-to-r from-sky-400 to-blue-500' : 'bg-gradient-to-r from-blue-500 to-cyan-500'}`}></div>
                 </div>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
@@ -242,11 +248,11 @@ export default function Dashboard() {
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="bg-white/40 backdrop-blur-xl p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60"
+                className={`backdrop-blur-xl p-8 rounded-2xl border ${isDark ? 'bg-slate-900/45 border-slate-700/60 shadow-[0_12px_35px_rgba(2,6,23,0.55)]' : 'bg-white/40 border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)]'}`}
               >
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-[#1e293b]">Thêm Giao Dịch</h2>
-                  <div className="w-12 h-1 bg-gradient-to-r from-indigo-400 to-purple-400 mt-2 rounded-full"></div>
+                  <h2 className={`text-2xl font-bold ${isDark ? 'text-slate-100' : 'text-[#1e293b]'}`}>Thêm Giao Dịch</h2>
+                  <div className={`w-12 h-1 mt-2 rounded-full ${isDark ? 'bg-gradient-to-r from-sky-400 to-blue-500' : 'bg-gradient-to-r from-blue-500 to-cyan-500'}`}></div>
                 </div>
                 <div className="space-y-4">
                   <div className="relative">
@@ -318,11 +324,11 @@ export default function Dashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
               whileHover={{ y: -2 }}
-              className="bg-white/40 backdrop-blur-xl p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 mt-8"
+              className={`backdrop-blur-xl p-8 rounded-2xl border mt-8 ${isDark ? 'bg-slate-900/45 border-slate-700/60 shadow-[0_12px_35px_rgba(2,6,23,0.55)]' : 'bg-white/40 border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)]'}`}
             >
               <div className="mb-6">
-                <h2 className="text-2xl font-bold text-[#1e293b]">Công Cụ Lọc</h2>
-                <div className="w-12 h-1 bg-gradient-to-r from-indigo-400 to-purple-400 mt-2 rounded-full"></div>
+                <h2 className={`text-2xl font-bold ${isDark ? 'text-slate-100' : 'text-[#1e293b]'}`}>Công Cụ Lọc</h2>
+                <div className={`w-12 h-1 mt-2 rounded-full ${isDark ? 'bg-gradient-to-r from-sky-400 to-blue-500' : 'bg-gradient-to-r from-blue-500 to-cyan-500'}`}></div>
               </div>
               <div className="flex flex-wrap gap-6 items-end">
                 <div className="flex-1 min-w-64">
@@ -351,7 +357,6 @@ export default function Dashboard() {
                         <option value="">Tất Cả</option>
                         {[...Array(12)].map((_, i) => {
                           const monthNum = i + 1;
-                          const monthName = new Date(2024, i, 1).toLocaleDateString('vi-VN', { month: 'long' });
                           return <option key={monthNum} value={monthNum}>Tháng {monthNum}</option>;
                         })}
                       </select>
@@ -397,26 +402,18 @@ export default function Dashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.8 }}
             >
-              <TransactionList transactions={filteredTransactions} onDelete={deleteTransaction} onEdit={onEdit} />
+              <TransactionList transactions={filteredTransactions} onDelete={deleteTransaction} onEdit={onEdit} isDark={isDark} />
             </motion.div>
 
             <EditTransactionModal
+              key={editingTransaction?.id ?? 'new'}
               transaction={editingTransaction}
               categories={categories}
               onSave={onSaveEdit}
               onClose={onCloseEdit}
               isOpen={showEditModal}
             />
-          </>
-        ) : (
-          <div className="flex justify-center items-center min-h-96">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="rounded-full h-12 w-12 border-b-2 border-indigo-600"
-            ></motion.div>
-          </div>
-        )}
+        </>
       </div>
     </div>
   );

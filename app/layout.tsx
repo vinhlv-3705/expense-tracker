@@ -27,17 +27,17 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="relative min-h-screen flex flex-col bg-[#f8fafc]">
+      <body className="relative min-h-screen flex flex-col">
         {/* Animated Background Blobs - High-End Light Glassmorphism */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
           {/* Soft Pink Blob */}
-          <div className="absolute -top-60 -left-60 w-[600px] h-[600px] bg-[#fae8ff] rounded-full blur-[120px] opacity-30 animate-blob"></div>
+          <div className="absolute -top-60 -left-60 w-[600px] h-[600px] rounded-full blur-[120px] opacity-30 animate-blob" style={{ backgroundColor: "var(--blob-1)" }}></div>
           {/* Sky Blue Blob */}
-          <div className="absolute top-1/3 -right-40 w-[500px] h-[500px] bg-[#e0f2fe] rounded-full blur-[120px] opacity-30 animate-blob animation-delay-2000"></div>
+          <div className="absolute top-1/3 -right-40 w-[500px] h-[500px] rounded-full blur-[120px] opacity-30 animate-blob animation-delay-2000" style={{ backgroundColor: "var(--blob-2)" }}></div>
           {/* Pale Mint Blob */}
-          <div className="absolute -bottom-40 left-1/4 w-[550px] h-[550px] bg-[#f0fdf4] rounded-full blur-[120px] opacity-30 animate-blob animation-delay-4000"></div>
+          <div className="absolute -bottom-40 left-1/4 w-[550px] h-[550px] rounded-full blur-[120px] opacity-30 animate-blob animation-delay-4000" style={{ backgroundColor: "var(--blob-3)" }}></div>
           {/* Additional Soft Purple Blob */}
-          <div className="absolute top-2/3 left-1/2 w-[400px] h-[400px] bg-[#faf5ff] rounded-full blur-[120px] opacity-20 animate-blob animation-delay-6000"></div>
+          <div className="absolute top-2/3 left-1/2 w-[400px] h-[400px] rounded-full blur-[120px] opacity-20 animate-blob animation-delay-6000" style={{ backgroundColor: "var(--blob-4)" }}></div>
         </div>
 
         {/* Content */}

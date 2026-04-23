@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState } from 'react';
 import { X } from 'lucide-react';
 import AddTransactionForm from './AddTransactionForm';
 
@@ -20,28 +20,12 @@ interface EditTransactionModalProps {
 }
 
 export default function EditTransactionModal({ transaction, categories, onSave, onClose, isOpen }: EditTransactionModalProps) {
-  const formData = useMemo(() => {
-    if (transaction && isOpen) {
-      return {
-        amount: transaction.amount.toString(),
-        type: transaction.type,
-        category: transaction.category,
-        note: transaction.note,
-      };
-    }
-    return {
-      amount: '',
-      type: 'expense' as 'income' | 'expense',
-      category: categories[0] || '',
-      note: '',
-    };
-  }, [transaction, isOpen, categories]);
-
-  const [localFormData, setLocalFormData] = useState(formData);
-
-  useEffect(() => {
-    setLocalFormData(formData);
-  }, [formData]);
+  const [localFormData, setLocalFormData] = useState(() => ({
+    amount: transaction?.amount.toString() ?? '',
+    type: transaction?.type ?? ('expense' as 'income' | 'expense'),
+    category: transaction?.category ?? (categories[0] || ''),
+    note: transaction?.note ?? '',
+  }));
 
   const handleSave = () => {
     const amount = parseFloat(localFormData.amount);
